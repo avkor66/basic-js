@@ -20,13 +20,51 @@ const { NotImplementedError } = require('../extensions/index.js');
  * 
  */
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(typeMashine = true) {
+    this.typeMashine = typeMashine
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  encrypt(string, key) {
+    if(!string || !key) throw new Error('Incorrect arguments!')
+    const spy = []
+    const _key = key.split('')
+    if (key.length < string.length) {
+        for(let i = key.length, j = 0; i < string.length; i++, j++) {
+            if (j >= key.length) j = 0
+            _key.push(_key[j])
+        }
+        key = _key.join('')
+    }
+    for (let i = 0, j = 0; i < string.length; i++) {
+        if ((string.charCodeAt(i) >= 65 && string.charCodeAt(i) <= 90) || (string.charCodeAt(i) >= 97 && string.charCodeAt(i) <= 122)) {
+            spy.push((((string.charCodeAt(i) > 96 ? string.charCodeAt(i) - 97 : string.charCodeAt(i) - 65) + (key.charCodeAt(j) > 96 ? key.charCodeAt(j) - 97 : key.charCodeAt(j) - 65)) % 26) + 65)
+            j++
+        } else {
+            spy.push(string.charCodeAt(i))
+        }
+    }
+    return this.typeMashine ? String.fromCharCode(...spy) : String.fromCharCode(...spy.reverse())
+  }
+  decrypt(encryptedMessage, key) {
+    if(!encryptedMessage || !key) throw new Error('Incorrect arguments!')
+    const spy = []
+    const _key = key.split('')
+    if (key.length < encryptedMessage.length) {
+        for(let i = key.length, j = 0; i < encryptedMessage.length; i++, j++) {
+            if (j >= key.length) j = 0
+            _key.push(_key[j])
+        }
+        key = _key.join('')
+    }
+    for (let i = 0, j = 0; i < encryptedMessage.length; i++) {
+        if ((encryptedMessage.charCodeAt(i) >= 65 && encryptedMessage.charCodeAt(i) <= 90) || (encryptedMessage.charCodeAt(i) >= 97 && encryptedMessage.charCodeAt(i) <= 122)) {
+            let num = (((encryptedMessage.charCodeAt(i) > 96 ? encryptedMessage.charCodeAt(i) - 97 : encryptedMessage.charCodeAt(i) - 65) - (key.charCodeAt(j) > 96 ? key.charCodeAt(j) - 97 : key.charCodeAt(j) - 65)) % 26) >= 0 ? (((encryptedMessage.charCodeAt(i) > 90 ? encryptedMessage.charCodeAt(i) - 97 : encryptedMessage.charCodeAt(i) - 65) - (key.charCodeAt(j) > 90 ? key.charCodeAt(j) - 97 : key.charCodeAt(j) - 65)) % 26) : (((encryptedMessage.charCodeAt(i) > 90 ? encryptedMessage.charCodeAt(i) - 97 : encryptedMessage.charCodeAt(i) - 65) - (key.charCodeAt(j) > 90 ? key.charCodeAt(j) - 97 : key.charCodeAt(j) - 65)) % 26) +26
+            spy.push(num + 65)
+            j++
+        } else {
+            spy.push(encryptedMessage.charCodeAt(i))
+        }
+    }
+    return this.typeMashine ? String.fromCharCode(...spy) : String.fromCharCode(...spy.reverse())
   }
 }
 
